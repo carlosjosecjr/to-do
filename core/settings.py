@@ -74,16 +74,32 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        "NAME":     environ.get("DBNAME"),
-        "USER":     environ.get("DBUSER"),
-        "PASSWORD": environ.get("DBPASSWD"),
-        "HOST":     environ.get("DBHOST"),
-        "PORT":     environ.get("DBPORT"),
+def set_dbconf():
+    config = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            "NAME":     environ.get("DBNAME"),
+            "USER":     environ.get("DBUSER"),
+            "PASSWORD": environ.get("DBPASSWD"),
+            "HOST":     environ.get("DBHOST"),
+            "PORT":     environ.get("DBPORT"),
+        }
     }
-}
+    
+    if environ.get("DEVELOPMENT"):
+        config = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "OPTIONS": {
+                    "service": "todo_app",
+                    "passfile": ".my_pgpass",
+                },
+            }
+        }
+
+    return config
+
+DATABASES = set_dbconf()
 
 
 # Password validation
